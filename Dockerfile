@@ -1,17 +1,24 @@
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 
-WORKDIR /next
+WORKDIR /app
 
-# Copy
-COPY next/package*.json ./
-COPY next .
-
-# Installer dependencies via npm
+# Copy package files and install dependencies
+COPY package*.json ./
 RUN npm install
+
+# Copy the rest of the application code and build
+COPY . .
 RUN npx prisma generate
 RUN npm run next:build
 
-# Expose port
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# Copy only the necessary files from the builder stage
+COPY --from=builder /app ./
+
+# Expose ports
 EXPOSE 3000
 
 # Start the server
