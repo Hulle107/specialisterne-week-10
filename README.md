@@ -18,9 +18,11 @@
   - [📑 Modeler](#-modeler)
     - [Task](#task)
     - [User](#user)
-  - [💾 Installering](#-installering)
+  - [📦 Krav](#-krav)
   - [🔧 Tilføj environment fil](#-tilføj-environment-fil)
-  - [🏃 Start udviklingsmiljø](#-start-udviklingsmiljø)
+  - [🚀 Kom i gang](#-kom-i-gang)
+    - [🌐 Produktion / Fuldt Docker-miljø](#-produktion--fuldt-docker-miljø)
+    - [🛠️ Start udviklingsmiljø](#️-start-udviklingsmiljø)
   - [🔄 Version historie](#-version-historie)
   - [📝 Noter](#-noter)
 
@@ -120,12 +122,13 @@ SQLite-databasen administreres via Prisma migrations.
 |updated_at|DateTime?|Dato for ændring|
 |created_at|DateTime|Dato for oprettelse|
 
-## 💾 Installering
+## 📦 Krav
 
-```shell
-# Downloader & installere alle nødvendige filer
-npm install -y
-```
+Før du går i gang, skal du have installeret:
+
+- [Node.js](https://nodejs.org/) (version 16 eller nyere)
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
 
 ## 🔧 Tilføj environment fil
 
@@ -135,25 +138,72 @@ Lav en fil ved navn `.env` i rodmappen.
 POSTGRES_USER=YourUsername
 POSTGRES_PASSWORD=YourSecretPassword
 POSTGRES_DB=YourDatabaseName
+
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
 ```
 
 Udfyld alle felter med de nødvændige oplysninger.
 
-## 🏃 Start udviklingsmiljø
+## 🚀 Kom i gang
 
-First, run the development server:
+Dette projekt bruger Docker til at køre en PostgreSQL-database og tilbyder to måder at starte projektet på:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Produktion / fuldt miljø – både Next.js og PostgreSQL køres i Docker
+- Udviklingsmiljø – kun PostgreSQL kører i Docker, mens Next.js kører lokalt (fx med hot-reload)
+
+### 🌐 Produktion / Fuldt Docker-miljø
+
+**Byg og start alle services (Next.js + PostgreSQL):**
+
+```shell
+docker compose up --build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> Kør følgende kommando fra projektets rodmappe (hvor `docker-compose.yml` ligger)
+
+**Dette vil:**
+
+- Bygge Docker-images
+- Starte Next.js-applikationen
+- Starte PostgreSQL
+- Oprette netværk og links mellem services
+
+**Applikationen vil typisk være tilgængelig på:**
+
+```shell
+http://localhost:3000
+```
+
+**Stop miljøet igen:**
+
+```shell
+docker compose down -v
+```
+
+### 🛠️ Start udviklingsmiljø
+
+> I udvikling er det ofte nemmere at køre PostgreSQL i Docker og Next.js lokalt (med hot reload)
+
+**Start kun PostgreSQL-containeren:**
+
+```shell
+docker compose up -d postgres
+```
+
+- `-d` starter containeren i baggrunden
+- `postgres` skal matche navnet på din database-service i `docker-compose.yml`
+
+**Installer afhængigheder:**
+
+```shell
+npm install
+```
+
+**Start Next.js i udviklingstilstand:**
+
+```shell
+npm run next:dev
+```
 
 ## 🔄 Version historie
 
