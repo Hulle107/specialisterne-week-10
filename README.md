@@ -132,15 +132,9 @@ npm install -y
 Lav en fil ved navn `.env` i rodmappen.
 
 ```ini
-MYSQL_HOST=[mysql-host]
-MYSQL_USER=[mysql-bruger]
-MYSQL_PASS=[mysql-kodeord]
-MYSQL_NAME=[mysql-database-navn]
-
-PERMIT_PDP=[permit-pdp-host]
-PERMIT_TOKEN=[permit-token]
-
-JWT_SECRET=[hemmelig-kode]
+POSTGRES_USER=YourUsername
+POSTGRES_PASSWORD=YourSecretPassword
+POSTGRES_DB=YourDatabaseName
 ```
 
 Udfyld alle felter med de nødvændige oplysninger.
