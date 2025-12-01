@@ -39,3 +39,7 @@ next-env.d.ts
 
 # Prisma
 /src/generated/prisma
+
+# Enviroments
+.env*
+!.env.example
