@@ -16,6 +16,7 @@
     "@prisma/extension-accelerate": "^3.0.0",
     "audit": "^0.0.6",
     "dotenv": "^17.2.3",
+    "hashids": "^2.3.0",
     "next": "16.0.3",
     "pg": "^8.16.3",
     "react": "19.2.0",

@@ -5,4 +5,4 @@ const options = {
   accelerateUrl: process.env.DATABASE_URL as string,
 }
 
-export const database = new PrismaClient(options).$extends(withAccelerate());
+export const Database = new PrismaClient(options).$extends(withAccelerate());
