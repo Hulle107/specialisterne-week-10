@@ -1,8 +1,10 @@
 import { Authentication } from "./authentication.service";
 import { Database } from "./database.service";
-import { TaskCreateInput, TaskUpdateInput, TaskOrderByWithRelationInput, TaskFindManyArgs, TaskFindUniqueArgs, TaskUpdateArgs, TaskCreateArgs, TaskDeleteArgs } from "@/generated/prisma/models";
+import { TaskCreateInput, TaskUpdateInput, TaskOrderByWithRelationInput, TaskFindManyArgs, TaskFindUniqueArgs, TaskUpdateArgs, TaskCreateArgs, TaskDeleteArgs, TaskModel } from "@/generated/prisma/models";
+import { encodeId } from "./hashid.service";
 
 export type TaskRelation = "owner" | "assigned";
+export type SanitizedTaskModel = Omit<TaskModel, "id" | "ownerId" | "assignedId"> & { id: string, ownerId: string, assignedId: string };
 
 export default class TaskService {
     authentication: Authentication;
@@ -25,18 +27,18 @@ export default class TaskService {
         if (skip < 0) skip = 0;
         if (take < 1) take = 1;
 
-        let search: TaskFindManyArgs = {
+        let findMany: TaskFindManyArgs = {
             where,
             orderBy,
             skip,
             take,
         };
 
-        return Database.task.findMany(search);
+        return Database.task.findMany(findMany);
     }
 
     async getOne(id: number) {
-        let search: TaskFindUniqueArgs = {
+        let findUnique: TaskFindUniqueArgs = {
             where: {
                 id,
                 AND: {
@@ -48,7 +50,7 @@ export default class TaskService {
             },
         };
 
-        return Database.task.findFirstOrThrow(search);
+        return Database.task.findFirst(findUnique);
     }
 
     async create(task: Omit<TaskCreateInput, "owner" | "createdAt" | "updatedAt" | "completedAt">) {
@@ -108,5 +110,23 @@ export default class TaskService {
         };
 
         return Database.task.update(update);
+    }
+
+    sanitizeMany(tasks: TaskModel[]): SanitizedTaskModel[] {
+        let sanitized: SanitizedTaskModel[] = [];
+        tasks.forEach(task => sanitized.push(this.sanitizeOne(task)));
+
+        return sanitized;
+    }
+
+    sanitizeOne(task: TaskModel): SanitizedTaskModel {
+        let sanitized = {
+            ...task,
+            id: encodeId(task.id, "TASK"),
+            ownerId: encodeId(task.ownerId, "USER"),
+            assignedId: encodeId(task.assignedId, "USER"),
+        };
+
+        return sanitized;
     }
 }
